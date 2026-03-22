@@ -6,7 +6,7 @@ This document contains all tasks required to implement `prompt-inherit` per the 
 
 ## Phase 1: Project Scaffolding and Core Types
 
-- [ ] **Install dev dependencies** — Add `typescript`, `vitest`, and `eslint` as dev dependencies. Verify `npm run build`, `npm run test`, and `npm run lint` commands work with the existing `package.json` scripts. | Status: not_done
+- [x] **Install dev dependencies** — Add `typescript`, `vitest`, and `eslint` as dev dependencies. Verify `npm run build`, `npm run test`, and `npm run lint` commands work with the existing `package.json` scripts. | Status: done
 
 - [ ] **Define all TypeScript types in `src/types.ts`** — Create the types file with all type definitions from spec section 7: `MergeStrategy`, `SectionValue`, `BuiltInSectionName`, `SectionDefinitions`, `VariableDefinition`, `SlotDefinition`, `PromptConfig<TVars>`, `ExtendOptions<TVars>`, `MixinConfig<TVars>`, `Mixin`, `OutputFormat`, `RoleMapping`, `RenderOptions`, `PromptMessage`, `AnthropicPromptOutput`, `RenderResult<F>`, `InspectionResult`, `SerializedPrompt`. Ensure generic type parameters match the spec exactly. | Status: not_done
 
@@ -24,55 +24,55 @@ This document contains all tasks required to implement `prompt-inherit` per the 
 
 ## Phase 2: Core Prompt — definePrompt and Prompt Class Shell
 
-- [ ] **Implement `definePrompt()` in `src/define-prompt.ts`** — Factory function that validates a `PromptConfig`, normalizes section values (plain strings become `{ content, strategy: 'replace' }`), validates `sectionOrder` references existing sections, and returns a new `Prompt` instance with `parent: null` and `depth: 0`. | Status: not_done
+- [x] **Implement `definePrompt()` in `src/define-prompt.ts`** — Factory function that validates a `PromptConfig`, normalizes section values (plain strings become `{ content, strategy: 'replace' }`), validates `sectionOrder` references existing sections, and returns a new `Prompt` instance with `parent: null` and `depth: 0`. | Status: done
 
-- [ ] **Implement Prompt class shell in `src/prompt.ts`** — Create the `Prompt<TVars>` class with readonly properties: `name`, `parent`, `depth`. Store internal state: own section definitions (normalized), variable declarations, slot declarations, applied mixins list, bound variable values, section order, section separator, and metadata. All mutation methods (`.extend()`, `.with()`, `.override()`, `.set()`) must return new `Prompt` instances without modifying the original (immutability). | Status: not_done
+- [x] **Implement Prompt class shell in `src/prompt.ts`** — Create the `Prompt<TVars>` class with readonly properties: `name`, `parent`, `depth`. Store internal state: own section definitions (normalized), variable declarations, slot declarations, applied mixins list, bound variable values, section order, section separator, and metadata. All mutation methods (`.extend()`, `.with()`, `.override()`, `.set()`) must return new `Prompt` instances without modifying the original (immutability). | Status: done
 
-- [ ] **Implement `Prompt.extend()` method** — Create a child `Prompt` whose parent is `this`. Accept `ExtendOptions` with sections, variables, slots, sectionOrder, metadata, and `freeze` flag. Merge metadata (child wins on conflicts). When `freeze: true`, copy the parent's resolved sections into the child at extend time, severing the live reference. Run cycle detection before returning the child. | Status: not_done
+- [x] **Implement `Prompt.extend()` method** — Create a child `Prompt` whose parent is `this`. Accept `ExtendOptions` with sections, variables, slots, sectionOrder, metadata, and `freeze` flag. Merge metadata (child wins on conflicts). When `freeze: true`, copy the parent's resolved sections into the child at extend time, severing the live reference. Run cycle detection before returning the child. | Status: done
 
-- [ ] **Implement `Prompt.override()` method** — Syntactic sugar for `.extend({ sections: overrides })`. Returns a new Prompt that is a child of the current prompt with only the specified section overrides applied. | Status: not_done
+- [x] **Implement `Prompt.override()` method** — Syntactic sugar for `.extend({ sections: overrides })`. Returns a new Prompt that is a child of the current prompt with only the specified section overrides applied. | Status: done
 
-- [ ] **Implement `Prompt.with()` method** — Apply a `Mixin` to the current prompt. Returns a new `Prompt` instance with the mixin added to its applied mixins list. The original prompt is not modified. Multiple `.with()` calls chain — later mixins have higher priority than earlier ones. | Status: not_done
+- [x] **Implement `Prompt.with()` method** — Apply a `Mixin` to the current prompt. Returns a new `Prompt` instance with the mixin added to its applied mixins list. The original prompt is not modified. Multiple `.with()` calls chain — later mixins have higher priority than earlier ones. | Status: done
 
 ---
 
 ## Phase 3: Resolution Algorithm
 
-- [ ] **Implement chain walker in `src/resolver/chain-walker.ts`** — Build the inheritance chain array by walking parent references from self to root: `[self, parent, grandparent, ..., root]`. Detect cycles by tracking visited prompt references; throw `PromptCycleError` if a cycle is found. | Status: not_done
+- [x] **Implement chain walker in `src/resolver/chain-walker.ts`** — Build the inheritance chain array by walking parent references from self to root: `[self, parent, grandparent, ..., root]`. Detect cycles by tracking visited prompt references; throw `PromptCycleError` if a cycle is found. | Status: done
 
-- [ ] **Implement section resolver in `src/resolver/section-resolver.ts`** — For each section name, walk the chain from root to self (reverse order), applying merge strategies at each level. At each level, first apply the prompt's own section definition, then apply each mixin's section definition in application order. Use `applyStrategy()` from utils/merge.ts. Return a `Record<string, string | null>` mapping section names to resolved content (null means removed). | Status: not_done
+- [x] **Implement section resolver in `src/resolver/section-resolver.ts`** — For each section name, walk the chain from root to self (reverse order), applying merge strategies at each level. At each level, first apply the prompt's own section definition, then apply each mixin's section definition in application order. Use `applyStrategy()` from utils/merge.ts. Return a `Record<string, string | null>` mapping section names to resolved content (null means removed). | Status: done
 
-- [ ] **Implement section enumeration** — Collect the union of all section names across the entire chain (including all mixin sections at every level). This determines which sections will appear in the output. | Status: not_done
+- [x] **Implement section enumeration** — Collect the union of all section names across the entire chain (including all mixin sections at every level). This determines which sections will appear in the output. | Status: done
 
-- [ ] **Implement section ordering logic** — Resolve the final section order: if an explicit `sectionOrder` is provided (prompt-level or render-level), use it. Otherwise, use the default built-in order (persona, context, system, constraints, tools, safety, outputFormat, examples) followed by custom sections in first-definition order. Sections not in the order list are appended at the end. | Status: not_done
+- [x] **Implement section ordering logic** — Resolve the final section order: if an explicit `sectionOrder` is provided (prompt-level or render-level), use it. Otherwise, use the default built-in order (persona, context, system, constraints, tools, safety, outputFormat, examples) followed by custom sections in first-definition order. Sections not in the order list are appended at the end. | Status: done
 
-- [ ] **Implement resolution entry point in `src/resolver/index.ts`** — Orchestrate the five resolution phases: (1) chain collection, (2) section enumeration, (3) per-section resolution, (4) slot filling, (5) variable substitution. Return the fully resolved sections ready for rendering. | Status: not_done
+- [x] **Implement resolution entry point in `src/resolver/index.ts`** — Orchestrate the five resolution phases: (1) chain collection, (2) section enumeration, (3) per-section resolution, (4) slot filling, (5) variable substitution. Return the fully resolved sections ready for rendering. | Status: done
 
-- [ ] **Wire `Prompt.getSection()` method** — Resolve a single section by running the full chain resolution for that section name. Return the final content string, or `undefined` if the section does not exist or was removed. | Status: not_done
+- [x] **Wire `Prompt.getSection()` method** — Resolve a single section by running the full chain resolution for that section name. Return the final content string, or `undefined` if the section does not exist or was removed. | Status: done
 
-- [ ] **Wire `Prompt.getSectionNames()` method** — Return all resolved section names (excluding removed sections) in rendering order. | Status: not_done
+- [x] **Wire `Prompt.getSectionNames()` method** — Return all resolved section names (excluding removed sections) in rendering order. | Status: done
 
-- [ ] **Wire `Prompt.getChain()` method** — Return the inheritance chain as an array of `{ name, prompt }` objects. | Status: not_done
+- [x] **Wire `Prompt.getChain()` method** — Return the inheritance chain as an array of `{ name, prompt }` objects. | Status: done
 
 ---
 
 ## Phase 4: Merge Strategy Tests
 
-- [ ] **Test `replace` merge strategy** — Two-level chain where child replaces parent section. Verify parent content is completely replaced by child content. | Status: not_done
+- [x] **Test `replace` merge strategy** — Two-level chain where child replaces parent section. Verify parent content is completely replaced by child content. | Status: done
 
-- [ ] **Test `prepend` merge strategy** — Two-level chain where child prepends to parent section. Verify child content appears before parent content, separated by the configured delimiter. | Status: not_done
+- [x] **Test `prepend` merge strategy** — Two-level chain where child prepends to parent section. Verify child content appears before parent content, separated by the configured delimiter. | Status: done
 
-- [ ] **Test `append` merge strategy** — Two-level chain where child appends to parent section. Verify child content appears after parent content, separated by the configured delimiter. | Status: not_done
+- [x] **Test `append` merge strategy** — Two-level chain where child appends to parent section. Verify child content appears after parent content, separated by the configured delimiter. | Status: done
 
-- [ ] **Test `remove` merge strategy** — Two-level chain where child removes a parent section. Verify the section is excluded from the final output. | Status: not_done
+- [x] **Test `remove` merge strategy** — Two-level chain where child removes a parent section. Verify the section is excluded from the final output. | Status: done
 
-- [ ] **Test default strategy (no explicit strategy)** — When child defines a section as a plain string (no `{ content, strategy }` object), verify it defaults to `replace`. | Status: not_done
+- [x] **Test default strategy (no explicit strategy)** — When child defines a section as a plain string (no `{ content, strategy }` object), verify it defaults to `replace`. | Status: done
 
 - [ ] **Test merge strategies with `undefined` existing content** — When a strategy is `prepend` or `append` but no parent defines the section, verify the content is used as-is (no separator artifacts). | Status: not_done
 
-- [ ] **Test deep chain resolution (3+ levels)** — Test a 3-level chain where a section is defined at root, overridden at level 1, and overridden again at level 2 with different strategies. Verify the accumulated result is correct. | Status: not_done
+- [x] **Test deep chain resolution (3+ levels)** — Test a 3-level chain where a section is defined at root, overridden at level 1, and overridden again at level 2 with different strategies. Verify the accumulated result is correct. | Status: done
 
-- [ ] **Test section inherited through multiple levels** — Test a section defined only at the root that passes through 3 child levels without override. Verify it is inherited unchanged. | Status: not_done
+- [x] **Test section inherited through multiple levels** — Test a section defined only at the root that passes through 3 child levels without override. Verify it is inherited unchanged. | Status: done
 
 - [ ] **Test mixed strategies in a chain** — Test a chain where level 1 appends to root, level 2 prepends to the accumulated result. Verify the final ordering: level 2 content, root content, level 1 content. | Status: not_done
 
@@ -82,9 +82,9 @@ This document contains all tasks required to implement `prompt-inherit` per the 
 
 - [ ] **Implement variable declaration and inheritance in Prompt** — Store variable declarations in each Prompt. When extending, merge parent's variable declarations with child's (child can add new vars, override defaults, change required status). Validate that variable types are not changed by children (string stays string). Throw at extend time if type mismatch is detected. | Status: not_done
 
-- [ ] **Implement `Prompt.set()` method** — Return a new Prompt with the given variable values merged into the bound values map. Later `.set()` calls override earlier bindings for the same variable. Validate bound value types at set time (runtime typeof check). | Status: not_done
+- [x] **Implement `Prompt.set()` method** — Return a new Prompt with the given variable values merged into the bound values map. Later `.set()` calls override earlier bindings for the same variable. Validate bound value types at set time (runtime typeof check). | Status: done
 
-- [ ] **Implement variable substitutor in `src/resolver/variable-substitutor.ts`** — Scan resolved section content for `{{variableName}}` patterns. Replace each occurrence with the bound value, converting types per spec: string as-is, number via `String()`, boolean as `'true'`/`'false'`, object/array via `JSON.stringify(value, null, 2)`. | Status: not_done
+- [x] **Implement variable substitutor in `src/resolver/variable-substitutor.ts`** — Scan resolved section content for `{{variableName}}` patterns. Replace each occurrence with the bound value, converting types per spec: string as-is, number via `String()`, boolean as `'true'`/`'false'`, object/array via `JSON.stringify(value, null, 2)`. | Status: done
 
 - [ ] **Implement variable validator in `src/resolver/variable-validator.ts`** — At render time (when `partial` is false), validate: (1) all required variables without defaults have been bound, (2) bound values match declared types, (3) no `{{variableName}}` references in section content reference undeclared variables. Collect all issues and throw a single `PromptValidationError` listing them all. | Status: not_done
 
@@ -106,15 +106,15 @@ This document contains all tasks required to implement `prompt-inherit` per the 
 
 - [ ] **Test variable type mismatch rejection** — Parent declares `role` as string; child attempts to redeclare as number. Verify an error is thrown at extend time. | Status: not_done
 
-- [ ] **Test `.set()` with valid values** — Bind variables and verify they are stored. Verify `.set()` returns a new instance (immutability). | Status: not_done
+- [x] **Test `.set()` with valid values** — Bind variables and verify they are stored. Verify `.set()` returns a new instance (immutability). | Status: done
 
 - [ ] **Test `.set()` with type mismatches** — Attempt to bind a number to a string variable. Verify runtime error is thrown. | Status: not_done
 
 - [ ] **Test incremental `.set()` calls** — Call `.set({ role: 'x' })` then `.set({ language: 'en' })`. Verify both bindings are present. Verify that a second `.set({ role: 'y' })` overrides the first. | Status: not_done
 
-- [ ] **Test variable substitution in rendered output** — Define a section with `{{role}}` and bind `role` via `.set()`. Render and verify substitution. Test all five types (string, number, boolean, object, array). | Status: not_done
+- [x] **Test variable substitution in rendered output** — Define a section with `{{role}}` and bind `role` via `.set()`. Render and verify substitution. Test all five types (string, number, boolean, object, array). | Status: done
 
-- [ ] **Test render-time variable overrides** — Bind `role` via `.set()`, then provide a different `role` in `.render({ variables: { role: 'override' } })`. Verify render-time value wins. | Status: not_done
+- [x] **Test render-time variable overrides** — Bind `role` via `.set()`, then provide a different `role` in `.render({ variables: { role: 'override' } })`. Verify render-time value wins. | Status: done
 
 - [ ] **Test missing required variable throws PromptValidationError** — Declare a required variable with no default, do not bind it, and call `.render()`. Verify `PromptValidationError` is thrown with the correct issue. | Status: not_done
 
@@ -128,9 +128,9 @@ This document contains all tasks required to implement `prompt-inherit` per the 
 
 ## Phase 7: Mixin System
 
-- [ ] **Implement `defineMixin()` in `src/mixin.ts`** — Factory function that validates a `MixinConfig` (name is required), normalizes section values, and returns an immutable `Mixin` object with readonly `name`, `sections`, `variables`, and `description` properties. | Status: not_done
+- [x] **Implement `defineMixin()` in `src/mixin.ts`** — Factory function that validates a `MixinConfig` (name is required), normalizes section values, and returns an immutable `Mixin` object with readonly `name`, `sections`, `variables`, and `description` properties. | Status: done
 
-- [ ] **Implement mixin application order in resolution** — When resolving sections, at each level of the chain, apply the prompt's own sections first, then apply mixins in application order (first applied = lowest priority, last applied = highest priority). For `replace` strategy, last mixin wins. For `append`, content accumulates in application order. For `prepend`, content accumulates in reverse application order (last applied is outermost). | Status: not_done
+- [x] **Implement mixin application order in resolution** — When resolving sections, at each level of the chain, apply the prompt's own sections first, then apply mixins in application order (first applied = lowest priority, last applied = highest priority). For `replace` strategy, last mixin wins. For `append`, content accumulates in application order. For `prepend`, content accumulates in reverse application order (last applied is outermost). | Status: done
 
 - [ ] **Implement mixin variable merging** — When a mixin is applied via `.with()`, merge the mixin's variable declarations into the prompt's variable declarations. Mixin variables that conflict with existing variables follow the same rules as child variable overrides. | Status: not_done
 
@@ -138,9 +138,9 @@ This document contains all tasks required to implement `prompt-inherit` per the 
 
 ## Phase 8: Mixin System Tests
 
-- [ ] **Test `defineMixin()` creation** — Create a mixin with name, description, sections, and variables. Verify all properties are set and readonly. | Status: not_done
+- [x] **Test `defineMixin()` creation** — Create a mixin with name, description, sections, and variables. Verify all properties are set and readonly. | Status: done
 
-- [ ] **Test single mixin application** — Apply one mixin to a base prompt via `.with()`. Verify the mixin's sections are merged with the prompt's sections per the merge strategies. | Status: not_done
+- [x] **Test single mixin application** — Apply one mixin to a base prompt via `.with()`. Verify the mixin's sections are merged with the prompt's sections per the merge strategies. | Status: done
 
 - [ ] **Test multiple mixin application order** — Apply three mixins in order. Verify that for `replace` strategy, the last mixin wins. For `append` strategy, content accumulates in application order. | Status: not_done
 
@@ -148,9 +148,9 @@ This document contains all tasks required to implement `prompt-inherit` per the 
 
 - [ ] **Test mixin with `remove` strategy** — Apply a mixin that removes a section defined in the prompt. Verify the section is excluded from output. | Status: not_done
 
-- [ ] **Test mixin + inheritance interaction** — Parent has mixins, child has different mixins. Verify resolution order: parent sections, parent mixins, child sections, child mixins. | Status: not_done
+- [x] **Test mixin + inheritance interaction** — Parent has mixins, child has different mixins. Verify resolution order: parent sections, parent mixins, child sections, child mixins. | Status: done
 
-- [ ] **Test mixin immutability** — Verify `.with()` returns a new Prompt and the original prompt is unmodified. | Status: not_done
+- [x] **Test mixin immutability** — Verify `.with()` returns a new Prompt and the original prompt is unmodified. | Status: done
 
 - [ ] **Test mixin with variables** — Mixin declares new variables. Verify they are merged into the prompt's variable declarations after `.with()`. | Status: not_done
 
@@ -158,9 +158,9 @@ This document contains all tasks required to implement `prompt-inherit` per the 
 
 ## Phase 9: Slot System
 
-- [ ] **Implement slot definition in `definePrompt()`** — Parse `slots` config and store slot declarations (name, default, description) on the Prompt. | Status: not_done
+- [x] **Implement slot definition in `definePrompt()`** — Parse `slots` config and store slot declarations (name, default, description) on the Prompt. | Status: done
 
-- [ ] **Implement slot filling in `.extend()`** — When extending, accept `slots` map in `ExtendOptions` that provides fill values for parent slots. Store slot fills on the child Prompt. | Status: not_done
+- [x] **Implement slot filling in `.extend()`** — When extending, accept `slots` map in `ExtendOptions` that provides fill values for parent slots. Store slot fills on the child Prompt. | Status: done
 
 - [ ] **Implement slot filler in `src/resolver/slot-filler.ts`** — After section resolution but before variable substitution, scan resolved section content for `{{slot:slotName}}` and `{{slot:slotName|default}}` patterns. Walk the chain from self to root collecting slot fill values. Substitute filled slots. Use default value if no fill exists. Leave unfilled slots with no default as literal text. | Status: not_done
 
@@ -168,11 +168,11 @@ This document contains all tasks required to implement `prompt-inherit` per the 
 
 ## Phase 10: Slot System Tests
 
-- [ ] **Test slot definition and filling** — Define a parent with `{{slot:taskInstructions}}` in a section. Extend with `slots: { taskInstructions: 'Analyze data.' }`. Render and verify the slot is filled. | Status: not_done
+- [x] **Test slot definition and filling** — Define a parent with `{{slot:taskInstructions}}` in a section. Extend with `slots: { taskInstructions: 'Analyze data.' }`. Render and verify the slot is filled. | Status: done
 
 - [ ] **Test unfilled slot with default** — Define `{{slot:greeting|Hello!}}` in a section. Do not fill the slot. Verify default "Hello!" is used in output. | Status: not_done
 
-- [ ] **Test unfilled slot without default** — Define `{{slot:taskInstructions}}` with no default and no fill. Verify the literal `{{slot:taskInstructions}}` appears in the output. | Status: not_done
+- [x] **Test unfilled slot without default** — Define `{{slot:taskInstructions}}` with no default and no fill. Verify the literal `{{slot:taskInstructions}}` appears in the output. | Status: done
 
 - [ ] **Test slot filling through multiple inheritance levels** — Grandparent defines a slot, parent does not fill it, grandchild fills it. Verify the fill value from grandchild is used. | Status: not_done
 
@@ -182,51 +182,51 @@ This document contains all tasks required to implement `prompt-inherit` per the 
 
 ## Phase 11: Renderers — String Format
 
-- [ ] **Implement string renderer in `src/renderer/string-renderer.ts`** — Join resolved sections (excluding null/removed sections) with the section separator (default `\n\n`), in section order. Return a single string. | Status: not_done
+- [x] **Implement string renderer in `src/renderer/string-renderer.ts`** — Join resolved sections (excluding null/removed sections) with the section separator (default `\n\n`), in section order. Return a single string. | Status: done
 
 - [ ] **Implement XML section wrapping** — When `wrapSections: true`, wrap each section's content in `<sectionName>\n...\n</sectionName>` tags before joining with separator. | Status: not_done
 
-- [ ] **Implement `excludeSections` and `includeSections` filtering** — If `includeSections` is provided, only render those sections. If `excludeSections` is provided, exclude those sections. `includeSections` takes precedence if both are specified. | Status: not_done
+- [x] **Implement `excludeSections` and `includeSections` filtering** — If `includeSections` is provided, only render those sections. If `excludeSections` is provided, exclude those sections. `includeSections` takes precedence if both are specified. | Status: done
 
-- [ ] **Wire `Prompt.render()` for string format** — Default format. Calls the resolution pipeline then the string renderer. Returns a string. | Status: not_done
+- [x] **Wire `Prompt.render()` for string format** — Default format. Calls the resolution pipeline then the string renderer. Returns a string. | Status: done
 
 ---
 
 ## Phase 12: Renderers — Message Formats
 
-- [ ] **Implement messages renderer in `src/renderer/messages-renderer.ts`** — Produce an OpenAI-style `{role, content}[]` array. Use the role mapping (default or custom) to determine which sections go into which role. Sections mapped to the same role are concatenated with section separators into a single message for that role. System sections produce a system message; user sections produce a user message. | Status: not_done
+- [x] **Implement messages renderer in `src/renderer/messages-renderer.ts`** — Produce an OpenAI-style `{role, content}[]` array. Use the role mapping (default or custom) to determine which sections go into which role. Sections mapped to the same role are concatenated with section separators into a single message for that role. System sections produce a system message; user sections produce a user message. | Status: done
 
-- [ ] **Implement Anthropic renderer in `src/renderer/anthropic-renderer.ts`** — Produce `{ system: string, messages: [{role, content}] }`. System-role sections go into the `system` field. Other sections go into the `messages` array as user messages. | Status: not_done
+- [x] **Implement Anthropic renderer in `src/renderer/anthropic-renderer.ts`** — Produce `{ system: string, messages: [{role, content}] }`. System-role sections go into the `system` field. Other sections go into the `messages` array as user messages. | Status: done
 
-- [ ] **Implement sections renderer in `src/renderer/sections-renderer.ts`** — Return the resolved sections as a plain `Record<string, string>` object. Exclude null/removed sections. Variables and slots are substituted. | Status: not_done
+- [x] **Implement sections renderer in `src/renderer/sections-renderer.ts`** — Return the resolved sections as a plain `Record<string, string>` object. Exclude null/removed sections. Variables and slots are substituted. | Status: done
 
-- [ ] **Implement renderer dispatcher in `src/renderer/index.ts`** — Based on the `format` option in `RenderOptions`, dispatch to the correct renderer: string, messages, anthropic, or sections. | Status: not_done
+- [x] **Implement renderer dispatcher in `src/renderer/index.ts`** — Based on the `format` option in `RenderOptions`, dispatch to the correct renderer: string, messages, anthropic, or sections. | Status: done
 
-- [ ] **Wire `Prompt.toMessages()` method** — Shorthand for `.render({ format: 'messages' })`. Accepts `Omit<RenderOptions, 'format'>`. Returns `PromptMessage[]`. | Status: not_done
+- [x] **Wire `Prompt.toMessages()` method** — Shorthand for `.render({ format: 'messages' })`. Accepts `Omit<RenderOptions, 'format'>`. Returns `PromptMessage[]`. | Status: done
 
 ---
 
 ## Phase 13: Renderer Tests
 
-- [ ] **Test plain text rendering with default separator** — Render a prompt with multiple sections. Verify output is sections joined by `\n\n` in correct order. | Status: not_done
+- [x] **Test plain text rendering with default separator** — Render a prompt with multiple sections. Verify output is sections joined by `\n\n` in correct order. | Status: done
 
-- [ ] **Test plain text rendering with custom separator** — Use `sectionSeparator: '\n---\n'`. Verify the custom separator is used. | Status: not_done
+- [x] **Test plain text rendering with custom separator** — Use `sectionSeparator: '\n---\n'`. Verify the custom separator is used. | Status: done
 
 - [ ] **Test XML-wrapped sections** — Render with `wrapSections: true`. Verify each section is wrapped in `<sectionName>...</sectionName>` tags. | Status: not_done
 
-- [ ] **Test `excludeSections` option** — Exclude the `safety` section. Verify it does not appear in output while other sections do. | Status: not_done
+- [x] **Test `excludeSections` option** — Exclude the `safety` section. Verify it does not appear in output while other sections do. | Status: done
 
-- [ ] **Test `includeSections` option** — Include only `persona` and `constraints`. Verify only those sections appear. | Status: not_done
+- [x] **Test `includeSections` option** — Include only `persona` and `constraints`. Verify only those sections appear. | Status: done
 
-- [ ] **Test OpenAI messages format with default role mapping** — Render with `format: 'messages'`. Verify system sections are in a system message and examples are in a user message. | Status: not_done
+- [x] **Test OpenAI messages format with default role mapping** — Render with `format: 'messages'`. Verify system sections are in a system message and examples are in a user message. | Status: done
 
 - [ ] **Test OpenAI messages format with custom role mapping** — Provide custom `roleMapping` that puts `context` and `examples` in user role. Verify the mapping is respected. | Status: not_done
 
-- [ ] **Test Anthropic format** — Render with `format: 'anthropic'`. Verify `system` field contains system sections and `messages` array contains user sections. | Status: not_done
+- [x] **Test Anthropic format** — Render with `format: 'anthropic'`. Verify `system` field contains system sections and `messages` array contains user sections. | Status: done
 
-- [ ] **Test raw sections format** — Render with `format: 'sections'`. Verify the result is a `Record<string, string>` with correct section names and content. | Status: not_done
+- [x] **Test raw sections format** — Render with `format: 'sections'`. Verify the result is a `Record<string, string>` with correct section names and content. | Status: done
 
-- [ ] **Test `.toMessages()` shorthand** — Verify it returns the same result as `.render({ format: 'messages' })`. | Status: not_done
+- [x] **Test `.toMessages()` shorthand** — Verify it returns the same result as `.render({ format: 'messages' })`. | Status: done
 
 - [ ] **Test section order in rendered output** — Define sections out of order. Verify the default ordering (persona, context, system, constraints, tools, safety, outputFormat, examples) is respected. | Status: not_done
 
@@ -236,13 +236,13 @@ This document contains all tasks required to implement `prompt-inherit` per the 
 
 ## Phase 14: Inspection
 
-- [ ] **Implement `Prompt.inspect()` method** — Return an `InspectionResult` containing: prompt name, full inheritance chain with depths, mixins at each level with prompt names and depths, resolved sections (without variable substitution), section sources (which level provided each section and what strategy), variable declarations with bound values and source, and slot fill status. | Status: not_done
+- [x] **Implement `Prompt.inspect()` method** — Return an `InspectionResult` containing: prompt name, full inheritance chain with depths, mixins at each level with prompt names and depths, resolved sections (without variable substitution), section sources (which level provided each section and what strategy), variable declarations with bound values and source, and slot fill status. | Status: done
 
-- [ ] **Test `.inspect()` on a single prompt** — Verify chain has one entry, no mixins, sections sourced from self. | Status: not_done
+- [x] **Test `.inspect()` on a single prompt** — Verify chain has one entry, no mixins, sections sourced from self. | Status: done
 
 - [ ] **Test `.inspect()` on a multi-level chain** — 3-level chain with mixins. Verify chain entries, mixin entries, and section source attribution are correct. | Status: not_done
 
-- [ ] **Test `.inspect()` variable reporting** — Verify variables show their declaration, bound value, and source prompt. | Status: not_done
+- [x] **Test `.inspect()` variable reporting** — Verify variables show their declaration, bound value, and source prompt. | Status: done
 
 - [ ] **Test `.inspect()` slot reporting** — Verify slots show filled/unfilled status, content, and source. | Status: not_done
 
@@ -250,11 +250,11 @@ This document contains all tasks required to implement `prompt-inherit` per the 
 
 ## Phase 15: Serialization — JSON
 
-- [ ] **Implement `Prompt.serialize()` in `src/serialization/serialize.ts`** — Convert a Prompt to a `SerializedPrompt` object. Recursively serialize the parent chain. Capture all sections (with explicit strategies), variables, slots, section order, separator, metadata, and applied mixin definitions. Bound variable values are NOT serialized (per spec). | Status: not_done
+- [x] **Implement `Prompt.serialize()` in `src/serialization/serialize.ts`** — Convert a Prompt to a `SerializedPrompt` object. Recursively serialize the parent chain. Capture all sections (with explicit strategies), variables, slots, section order, separator, metadata, and applied mixin definitions. Bound variable values are NOT serialized (per spec). | Status: done
 
-- [ ] **Implement `Prompt.toJSON()`** — Call `serialize()` and return `JSON.stringify(result, null, 2)`. | Status: not_done
+- [x] **Implement `Prompt.toJSON()`** — Call `serialize()` and return `JSON.stringify(result, null, 2)`. | Status: done
 
-- [ ] **Implement `loadPrompt()` in `src/serialization/deserialize.ts`** — Accept a `SerializedPrompt` object, validate its structure (version field must be 1), recursively deserialize the parent chain, reconstruct Prompt instances with `definePrompt` and `.extend()`, reapply mixins. Return a functional Prompt. | Status: not_done
+- [x] **Implement `loadPrompt()` in `src/serialization/deserialize.ts`** — Accept a `SerializedPrompt` object, validate its structure (version field must be 1), recursively deserialize the parent chain, reconstruct Prompt instances with `definePrompt` and `.extend()`, reapply mixins. Return a functional Prompt. | Status: done
 
 - [ ] **Implement `loadPromptFromJSON()`** — Parse a JSON string with `JSON.parse()` and pass to `loadPrompt()`. | Status: not_done
 
@@ -274,9 +274,9 @@ This document contains all tasks required to implement `prompt-inherit` per the 
 
 ## Phase 17: Serialization Tests
 
-- [ ] **Test JSON round-trip for a simple prompt** — Serialize a single prompt (no parent) to JSON, deserialize, render both, and verify identical output. | Status: not_done
+- [x] **Test JSON round-trip for a simple prompt** — Serialize a single prompt (no parent) to JSON, deserialize, render both, and verify identical output. | Status: done
 
-- [ ] **Test JSON round-trip for a prompt with inheritance** — Serialize a 3-level chain to JSON, deserialize, and verify rendering matches. | Status: not_done
+- [x] **Test JSON round-trip for a prompt with inheritance** — Serialize a 3-level chain to JSON, deserialize, and verify rendering matches. | Status: done
 
 - [ ] **Test JSON round-trip with mixins** — Serialize a prompt with applied mixins, deserialize, and verify rendering matches. | Status: not_done
 
@@ -296,13 +296,13 @@ This document contains all tasks required to implement `prompt-inherit` per the 
 
 ## Phase 18: Immutability and Live vs Frozen Inheritance Tests
 
-- [ ] **Test `.extend()` returns new instance** — Verify the child is a different object from the parent. Verify the parent is unmodified. | Status: not_done
+- [x] **Test `.extend()` returns new instance** — Verify the child is a different object from the parent. Verify the parent is unmodified. | Status: done
 
-- [ ] **Test `.with()` returns new instance** — Apply a mixin and verify the original prompt has no mixin applied. | Status: not_done
+- [x] **Test `.with()` returns new instance** — Apply a mixin and verify the original prompt has no mixin applied. | Status: done
 
-- [ ] **Test `.override()` returns new instance** — Override a section and verify the original prompt still has the original section content. | Status: not_done
+- [x] **Test `.override()` returns new instance** — Override a section and verify the original prompt still has the original section content. | Status: done
 
-- [ ] **Test `.set()` returns new instance** — Bind a variable and verify the original prompt has no bound value. | Status: not_done
+- [x] **Test `.set()` returns new instance** — Bind a variable and verify the original prompt has no bound value. | Status: done
 
 - [ ] **Test live inheritance (default)** — Create parent, extend to create child, then modify parent via `.override()`. Render the child and verify it reflects the parent's new state. Note: since `.override()` returns a new instance, test that the child references the original parent object and that if the parent object is mutable (through internal state), changes are reflected. Clarify: in the spec, `.override()` creates a new child, so "live" means the child holds a reference to the parent instance at extend time — verify this reference is maintained. | Status: not_done
 
@@ -466,7 +466,7 @@ This document contains all tasks required to implement `prompt-inherit` per the 
 
 - [ ] **Verify package.json metadata** — Ensure `name`, `version`, `description`, `main`, `types`, `files`, `bin`, `engines`, `license`, `keywords`, and `publishConfig` are correct. Add keywords: `prompt`, `llm`, `inheritance`, `composition`, `template`, `openai`, `anthropic`, `mixin`. | Status: not_done
 
-- [ ] **Verify zero runtime dependencies** — Confirm `dependencies` in package.json is empty or absent. All functionality uses only built-in Node.js modules and pure TypeScript. | Status: not_done
+- [x] **Verify zero runtime dependencies** — Confirm `dependencies` in package.json is empty or absent. All functionality uses only built-in Node.js modules and pure TypeScript. | Status: done
 
 - [ ] **Version bump to match implementation phase** — Set version to appropriate semver based on which implementation phase is complete (0.1.0 for Phase 1 core, up to 1.0.0 for stable release). | Status: not_done
 
