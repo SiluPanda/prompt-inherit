@@ -3,6 +3,7 @@
 Composable, inheritable prompt builder for AI/LLM applications with section-level merge strategies, mixins, variable substitution, and multi-format rendering. Zero runtime dependencies.
 
 [![npm version](https://img.shields.io/npm/v/prompt-inherit.svg)](https://www.npmjs.com/package/prompt-inherit)
+[![npm downloads](https://img.shields.io/npm/dt/prompt-inherit.svg)](https://www.npmjs.com/package/prompt-inherit)
 [![license](https://img.shields.io/npm/l/prompt-inherit.svg)](https://github.com/SiluPanda/prompt-inherit/blob/master/LICENSE)
 [![node](https://img.shields.io/node/v/prompt-inherit.svg)](https://www.npmjs.com/package/prompt-inherit)
 [![TypeScript](https://img.shields.io/badge/TypeScript-5.4%2B-blue.svg)](https://www.typescriptlang.org/)
