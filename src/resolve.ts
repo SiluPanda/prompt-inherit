@@ -56,19 +56,19 @@ export function resolveSection(sectionName: string, chain: ChainNode[]): string 
   const separator = chain[0]?.config.sectionSeparator ?? SECTION_SEPARATOR
 
   for (const node of reversedChain) {
-    // Apply mixin sections first (in mixin order), then node's own section
+    // Apply node's own section first (provides baseline), then mixins modify it
     const definitions: SectionValue[] = []
+
+    const nodeVal = node.config.sections[sectionName]
+    if (nodeVal !== undefined) {
+      definitions.push(nodeVal)
+    }
 
     for (const mixin of node.mixins) {
       const mixinVal = mixin.sections[sectionName]
       if (mixinVal !== undefined) {
         definitions.push(mixinVal)
       }
-    }
-
-    const nodeVal = node.config.sections[sectionName]
-    if (nodeVal !== undefined) {
-      definitions.push(nodeVal)
     }
 
     for (const def of definitions) {
