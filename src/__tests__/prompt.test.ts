@@ -423,3 +423,52 @@ describe('defineMixin()', () => {
     expect(mixin.description).toBe('Safety mixin')
   })
 })
+
+describe('regression: includeSections empty array', () => {
+  it('returns empty string when includeSections is an empty array', () => {
+    const p = definePrompt({
+      sections: { a: 'Alpha', b: 'Beta' },
+    })
+    const result = p.render({ includeSections: [] })
+    expect(result).toBe('')
+  })
+})
+
+describe('regression: mixin append on existing section', () => {
+  it('mixin with append strategy adds to existing section content', () => {
+    const mixin = defineMixin({
+      name: 'append-mixin',
+      sections: { instructions: { content: 'Extra rule.', strategy: 'append' } },
+    })
+    const p = definePrompt({
+      sections: { instructions: 'Base rules.' },
+    }).with(mixin)
+    const result = p.render() as string
+    expect(result).toContain('Base rules.')
+    expect(result).toContain('Extra rule.')
+  })
+
+  it('mixin with prepend strategy prepends to existing section', () => {
+    const mixin = defineMixin({
+      name: 'prepend-mixin',
+      sections: { instructions: { content: 'First.', strategy: 'prepend' } },
+    })
+    const p = definePrompt({
+      sections: { instructions: 'Second.' },
+    }).with(mixin)
+    const result = p.render() as string
+    expect(result).toContain('First.')
+    expect(result).toContain('Second.')
+    expect(result.indexOf('First.')).toBeLessThan(result.indexOf('Second.'))
+  })
+})
+
+describe('regression: invalid format falls back to string', () => {
+  it('returns a string for unrecognized format', () => {
+    const p = definePrompt({ sections: { a: 'Hello' } })
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
+    const result = p.render({ format: 'invalid' as any })
+    expect(typeof result).toBe('string')
+    expect(result).toContain('Hello')
+  })
+})

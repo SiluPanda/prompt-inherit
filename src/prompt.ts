@@ -106,7 +106,7 @@ export class Prompt {
     let rawSections = resolveAllSections(chain)
 
     // Apply include/exclude filters
-    if (options?.includeSections && options.includeSections.length > 0) {
+    if (options?.includeSections) {
       const include = new Set(options.includeSections)
       rawSections = Object.fromEntries(Object.entries(rawSections).filter(([k]) => include.has(k)))
     }
@@ -177,6 +177,8 @@ export class Prompt {
         return renderToAnthropic(substituted, order)
       case 'sections':
         return renderToSections(substituted)
+      default:
+        return renderToString(substituted, order, separator)
     }
   }
 
